@@ -7,9 +7,7 @@
 # Attenuate the sources by the primary beam model
 # v1 - Write the sources that have been selected (i.e. those within radius and above the threshold) to a VO table
 # [Put ratios down on a grid based on the image WCS - not actually doing this]
-version='v6'
-
-# Email sarah.white@icrar.org if stuck!
+version='v7'
 
 import os
 import sys
