@@ -14,14 +14,23 @@ WSCLEAN (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
 ### python packages:
 python version used is 2.7, may be updated to 3.6 at a later date.
+
 astropy
+
 matplotlib
+
 mwa_pb (github download for this)
+
 numpy
+
 scipy
+
 joblib
+
 multiprocessing
+
 tqdm
+
 mwa_client (https://github.com/ICRAR/manta-ray-client) - This is used to download MWA observations.
 
 Note: If processing on Pawsey scripts will need to be modified.
@@ -40,6 +49,7 @@ COTTER is manually applied to the gpu.fits files of the observation as well as m
 "
 This does not include the observation downloading and inital flagging or the image script.
 "
+
 nohup S300-processing-pipeline.sh --input_dir=$MYDATA --obsid_list=$MYDATA/Obs_list.txt --chan=236 > S300-pipeline-out.log &
 
 S300-processing-pipeline.sh --input_dir=$MYDATA --obsid_list=$MYDATA/Obs_list.txt --chan=236
@@ -49,12 +59,15 @@ S300-processing-pipeline.sh --input_dir=$MYDATA --obsid_list=$MYDATA/Obs_list.tx
 ## Individual scripts:
 
 ### Building the apparent sky model:
+
 nohup build_appskyV4.sh --input_dir=$MYDATA/Obs/${outputdir} --output_dir=$MYDATA/model/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > build-appsky-out.log &
 
 ### Sky model calibration:
+
 nohup cal_year1_S300V2.sh --input_dir=$MYDATA/Obs/${outputdir} --input_model=$MYDATA/model/${outputdir} --output_dir=$MYDATA/cal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > cal-out.log &
 
 ### Self-calibration:
+
 nohup selfcal.sh --input_dir=$MYDATA/cal/${outputdir} --output_dir=$MYDATA/selfcal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > selfcal-out.log &
 
 # Non-calibrator Observations:
@@ -62,12 +75,15 @@ nohup selfcal.sh --input_dir=$MYDATA/cal/${outputdir} --output_dir=$MYDATA/selfc
 ## Individual scripts:
 
 ### Building the apparent sky model:
+
 nohup build_appskyV4.sh --input_dir=$MYDATA/Obs/${outputdir} --output_dir=$MYDATA/model/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > build-appsky-out.log &
 
 ### Calibration solution transfer:
+
 nohup cal_transfer.sh --input_dir=$MYDATA/Obs/${outputdir} --cal_dir=$MYDATA/cal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --cal_obsid=${cal_obs} > cal_trans-out.log &
 
 ### Self-calibration:
+
 nohup selfcal.sh --input_dir=$MYDATA/cal/${outputdir} --output_dir=$MYDATA/selfcal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > selfcal-out.log &
 
 # Examples of Pipeline Inputs:
