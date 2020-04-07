@@ -1,15 +1,98 @@
-# 300-MHz-Pipeline-Scripts
-This repository contains all the scripts from my honours degree that I used to calbrate 300 MHz observations. These scripts are the modified calibration and imaging pipeline described in (https://mwa-lfd.haystack.mit.edu/twiki/bin/view/Main/GLEAM_year2), where they have been augmented to operate at 300 MHz.
 
-## Modifications to the Original Pipeline:
-The scripts build_beamsV2.sh and build_appskyV2.sh replace the build_model.sh script from the original pipeline. In future these two scripts will be consolidated again, since the reason they were split into two is no longer an issue.
+## Pipeline Dependencies: (I will need to give links as to where to get these)
 
-There are two versions of attenuate_by_beam.py. This script is where most of the modifications have occured, it has been modified from the original script to calculate the curvature in the beam and hence the apparent curvature for sources in the sky model. Additionally the order of operations has been changed and unnecessary for loops have been modified to make the script run more efficiently, this is necessary when fitting for beam curvature. There is a 300 MHz version which operates using the 300 MHz sky model that I developed for my honours thesis, if you are interested in this model email me (jaiden.cook@student.curtin.edu.au). The second version uses the full as yet releases GLEAM catalogue, and has been further generalised to determine the beam curvature for any specified MWA frequency band. The new GLEAM version of attenuate_by_beam_V7.py should work with the old build_model.sh, though the inputs parsed to the script have now changed, so build_model.sh will need a slight modifcation when calling attenuate_by_beam_V7.py, below is the suggested change:
+CASA
+CASA-CORE python wrapper
+CHGCENTRE *
+COTTER *
+WSCLEAN * - These need casa-core to function.
 
-$srun attenuate_by_beam_S300V7.py --pbeam ${obsid}-MFS-psf_beamI.fits --catalogue $catalogue --ra $ra_pnt --dec $dec_pnt --threshold $threshold
+python packages:
+python version used is 2.7, may be updated to 3.6 at a later date.
 
-Important note: the threshold in the current version of attenuate_by_beam_S300V7.py and the GLEAM variant is manually set in the code, this will need ot be commented out if you want to be able to parse your own threholds, or manually changed.
+astropy
+matplotlib
+mwa_pb (github download for this)
+numpy
+scipy
 
-Alternatively the GLEAM variant should work with build_appskyV2.sh, simply the name will need to be changed. I have only tested that this works with observations at 300 MHz, so if there are any issues please send me an email.
+Note: If processing on Pawsey scripts will need to be modified.
+Self-Note: I will also have to give the version of all the packages I used.
 
-The other scripts have simply been modifed to allow for the 300 MHz channel, apart from this change, they are effectively the same as the original scripts.
+## Downloading observations:
+
+nohup obs-downloadV2.sh --input_dir=$MYDATA/Obs --obsid_list=$MYDATA/Obs/Obs_list.txt --csvfile=$MYDATA/Obs/Obs_dl_list.csv > obsdownload.log &
+
+Obs_dl_list.csv is the input file required by the ASVO service to download observations and they should be of the format:
+
+obs_id=1131038424, job_type=d, download_type=vis
+
+COTTER is manually applied to the gpu.fits files of the observation as well as manual flagging using CASA.
+
+## Total data processing pipeline:
+"
+This does not include the observation downloading and inital flagging or the image script.
+"
+nohup S300-processing-pipeline.sh --input_dir=$MYDATA --obsid_list=$MYDATA/Obs_list.txt --chan=236 > S300-pipeline-out.log &
+
+S300-processing-pipeline.sh --input_dir=$MYDATA --obsid_list=$MYDATA/Obs_list.txt --chan=236
+
+### Calibrator Observations:
+
+## Individual scripts:
+#
+# Building the apparent sky model:
+nohup build_appskyV4.sh --input_dir=$MYDATA/Obs/${outputdir} --output_dir=$MYDATA/model/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > build-appsky-out.log &
+
+# Sky model calibration:
+nohup cal_year1_S300V2.sh --input_dir=$MYDATA/Obs/${outputdir} --input_model=$MYDATA/model/${outputdir} --output_dir=$MYDATA/cal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > cal-out.log &
+
+# Self-calibration:
+nohup selfcal.sh --input_dir=$MYDATA/cal/${outputdir} --output_dir=$MYDATA/selfcal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > selfcal-out.log &
+
+### Non-calibrator Observations:
+
+## Individual scripts:
+#
+# Building the apparent sky model:(This is optional in this case)
+nohup build_appskyV4.sh --input_dir=$MYDATA/Obs/${outputdir} --output_dir=$MYDATA/model/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > build-appsky-out.log &
+
+# Calibration solution transfer:
+nohup cal_transfer.sh --input_dir=$MYDATA/Obs/${outputdir} --cal_dir=$MYDATA/cal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --cal_obsid=${cal_obs} > cal_trans-out.log &
+
+# Self-calibration:
+nohup selfcal.sh --input_dir=$MYDATA/cal/${outputdir} --output_dir=$MYDATA/selfcal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > selfcal-out.log &
+
+## Inputs:
+
+# Obs_list.txt:
+
+This is a text file which contains the list of obsid's to be processed, along with the tiles that need to be flagged and the observation directory. The format is specified as such:
+
+OBSID TILE_LIST GROUP_ID CAL_OBSID
+
+OBSID: The GPS time ID for the given observation.
+
+TILE_LIST: sequence of integers that can range from 0-127, these are the ID's of the given tiles. If more than one tile is given then the ID's for each tile should be separated by a comma, i.e 0,105,80. If there are no tiles that need to be flagged then the string 'none' should be placed in the column.
+
+GROUP_ID: This is the folder name for the observation group. Observations at 300 MHz using this strategy should come in groups of at least two OBSID's where the first observation is the calibrator observation. The calibrator observation is usually of a bright source such as Pictor A, Hydra A or 3C444. Hence the folder name is usually HydA{0}, where {0} is some integer that specifies the grid pointing of the MWA for that particular observation group.
+
+CAL_OBSID: This is the OBSID of the calibrator observation, if the observation is a calibrator then this should just be left blank.
+
+# Example of an Obs_list.txt file:
+
+1139931552 none HydA9 
+1139935872 none HydA9 1139931552
+
+or
+
+1139931552 80,105 HydA9 
+1139935872 80,105 HydA9 1139931552
+
+**Note: This file only contains one observing group, but you could have multiple observing groups, this Obs_list.txt file should also be useable for the obs-download.sh script.
+
+For processing outside of the pipeline, the Obs_list.txt file requires only one row entry. This can be a calibrator or non-calibrator, just note that a non-calibrator will require a calibrated source for processing.
+
+## Deep Imaging Script:
+
+deep-image.sh --input_dir=$MYDATA/selfcal/${outputdir} --output_dir=$MYDATA/image/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=236 --pipecond="no" --lobeID="PB"
