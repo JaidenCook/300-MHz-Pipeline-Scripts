@@ -1,13 +1,15 @@
+# 300MHz MWA Observation Pipeline
 
-## Pipeline Dependencies: (I will need to give links as to where to get these)
 
-# CASA
-CASA-CORE python wrapper
-CHGCENTRE
+## Pipeline Dependencies:
+
+### CASA
+CASA-CORE python wrapper (http://casacore.github.io/casacore/)
+CHGCENTRE (https://sourceforge.net/p/wsclean/wiki/Installation/)
 COTTER 
-WSCLEAN - These need casa-core to function.
+WSCLEAN (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
-python packages:
+### python packages:
 python version used is 2.7, may be updated to 3.6 at a later date.
 astropy
 matplotlib
@@ -17,9 +19,9 @@ scipy
 joblib
 multiprocessing
 tqdm
+mwa_client (https://github.com/ICRAR/manta-ray-client) - This is used to download MWA observations.
 
 Note: If processing on Pawsey scripts will need to be modified.
-Self-Note: I will also have to give the version of all the packages I used.
 
 ## Downloading observations:
 
@@ -39,35 +41,35 @@ nohup S300-processing-pipeline.sh --input_dir=$MYDATA --obsid_list=$MYDATA/Obs_l
 
 S300-processing-pipeline.sh --input_dir=$MYDATA --obsid_list=$MYDATA/Obs_list.txt --chan=236
 
-### Calibrator Observations:
+# Calibrator Observations:
 
 ## Individual scripts:
-#
-# Building the apparent sky model:
+
+### Building the apparent sky model:
 nohup build_appskyV4.sh --input_dir=$MYDATA/Obs/${outputdir} --output_dir=$MYDATA/model/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > build-appsky-out.log &
 
-# Sky model calibration:
+### Sky model calibration:
 nohup cal_year1_S300V2.sh --input_dir=$MYDATA/Obs/${outputdir} --input_model=$MYDATA/model/${outputdir} --output_dir=$MYDATA/cal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > cal-out.log &
 
-# Self-calibration:
+### Self-calibration:
 nohup selfcal.sh --input_dir=$MYDATA/cal/${outputdir} --output_dir=$MYDATA/selfcal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > selfcal-out.log &
 
-### Non-calibrator Observations:
+# Non-calibrator Observations:
 
 ## Individual scripts:
-#
-# Building the apparent sky model:(This is optional in this case)
+
+### Building the apparent sky model:
 nohup build_appskyV4.sh --input_dir=$MYDATA/Obs/${outputdir} --output_dir=$MYDATA/model/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > build-appsky-out.log &
 
-# Calibration solution transfer:
+### Calibration solution transfer:
 nohup cal_transfer.sh --input_dir=$MYDATA/Obs/${outputdir} --cal_dir=$MYDATA/cal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --cal_obsid=${cal_obs} > cal_trans-out.log &
 
-# Self-calibration:
+### Self-calibration:
 nohup selfcal.sh --input_dir=$MYDATA/cal/${outputdir} --output_dir=$MYDATA/selfcal/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=$chan > selfcal-out.log &
 
-## Inputs:
+# Examples of Pipeline Inputs:
 
-# Obs_list.txt:
+## Obs_list.txt:
 
 This is a text file which contains the list of obsid's to be processed, along with the tiles that need to be flagged and the observation directory. The format is specified as such:
 
@@ -81,7 +83,7 @@ GROUP_ID: This is the folder name for the observation group. Observations at 300
 
 CAL_OBSID: This is the OBSID of the calibrator observation, if the observation is a calibrator then this should just be left blank.
 
-# Example of an Obs_list.txt file:
+### Example of an Obs_list.txt file:
 
 1139931552 none HydA9 
 1139935872 none HydA9 1139931552
@@ -95,6 +97,6 @@ or
 
 For processing outside of the pipeline, the Obs_list.txt file requires only one row entry. This can be a calibrator or non-calibrator, just note that a non-calibrator will require a calibrated source for processing.
 
-## Deep Imaging Script:
+# Deep Imaging Script:
 
 deep-image.sh --input_dir=$MYDATA/selfcal/${outputdir} --output_dir=$MYDATA/image/${outputdir} --obsid_list=$MYDATA/Obs_list.txt --chan=236 --pipecond="no" --lobeID="PB"
