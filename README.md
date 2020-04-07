@@ -1,20 +1,22 @@
 
 ## Pipeline Dependencies: (I will need to give links as to where to get these)
 
-CASA
+# CASA
 CASA-CORE python wrapper
-CHGCENTRE *
-COTTER *
-WSCLEAN * - These need casa-core to function.
+CHGCENTRE
+COTTER 
+WSCLEAN - These need casa-core to function.
 
 python packages:
 python version used is 2.7, may be updated to 3.6 at a later date.
-
 astropy
 matplotlib
 mwa_pb (github download for this)
 numpy
 scipy
+joblib
+multiprocessing
+tqdm
 
 Note: If processing on Pawsey scripts will need to be modified.
 Self-Note: I will also have to give the version of all the packages I used.
