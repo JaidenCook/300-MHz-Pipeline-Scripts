@@ -8,7 +8,7 @@ CASA-CORE python wrapper (http://casacore.github.io/casacore/)
 
 CHGCENTRE (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
-COTTER 
+COTTER (https://github.com/MWATelescope/cotter)
 
 WSCLEAN (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
