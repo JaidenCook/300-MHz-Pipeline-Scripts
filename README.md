@@ -1,10 +1,12 @@
 # 300MHz MWA Observation Pipeline
-
+This pipeline was developed during the duration of my Masters project to process and image MWA observations at 300MHz. It uses a large collection of free software to primarily perform the calibration and imaging process (COTTER,WSCLEAN, etc). This pipeline ties a lot of these software packages together taking input observations. It develops an apparent model for a particular observation, then calibrates the observation using this model.
 
 ## Pipeline Dependencies:
 
 ### CASA
 CASA-CORE python wrapper (http://casacore.github.io/casacore/)
+
+CALIBRATE
 
 CHGCENTRE (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
