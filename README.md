@@ -5,8 +5,11 @@
 
 ### CASA
 CASA-CORE python wrapper (http://casacore.github.io/casacore/)
+
 CHGCENTRE (https://sourceforge.net/p/wsclean/wiki/Installation/)
+
 COTTER 
+
 WSCLEAN (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
 ### python packages:
