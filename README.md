@@ -5,9 +5,9 @@ This pipeline was developed during the duration of my Masters project to process
 The software used in this pipeline is listed below, and where possible a link is provided to download the required software.
 
 ### CASA
-CASA-CORE python wrapper (http://casacore.github.io/casacore/ ,https://github.com/casacore/casacore)
-
 CALIBRATE (This is MWA software that is not necessarily publically available)
+
+CASA-CORE python wrapper (http://casacore.github.io/casacore/ ,https://github.com/casacore/casacore)
 
 CHGCENTRE (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
@@ -16,27 +16,30 @@ COTTER (https://github.com/MWATelescope/cotter)
 WSCLEAN (https://sourceforge.net/p/wsclean/wiki/Installation/)
 
 ### Python Packages
-python version used is 2.7, may be updated to 3.6 at a later date.
 
-python-casacore (https://github.com/casacore/python-casacore)
+Aeagean (https://github.com/PaulHancock/Aegean/wiki/Installation-and-Requirements)
 
 astropy
 
+joblib
+
 matplotlib
+
+multiprocessing
+
+mwa_client (https://github.com/ICRAR/manta-ray-client) - This is used to download MWA observations.
 
 mwa_pb (https://github.com/MWATelescope/mwa_pb)
 
 numpy
 
+python version used is 2.7, may be updated to 3.6 at a later date.
+
+python-casacore (https://github.com/casacore/python-casacore)
+
 scipy
 
-joblib
-
-multiprocessing
-
 tqdm
-
-mwa_client (https://github.com/ICRAR/manta-ray-client) - This is used to download MWA observations.
 
 **Note: A lot of these packages have their own dependencies, these are not listed.
 
