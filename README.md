@@ -5,7 +5,7 @@ This pipeline was developed during the duration of my Masters project to process
 The software used in this pipeline is listed below, and where possible a link is provided to download the required software.
 
 ### CASA
-CALIBRATE (This is MWA software that is not necessarily publically available)
+CALIBRATE (This is MWA software that is not necessarily publically available, https://github.com/ICRAR/mwa-reduce)
 
 CASA-CORE python wrapper (http://casacore.github.io/casacore/ ,https://github.com/casacore/casacore)
 
